@@ -26,7 +26,7 @@ namespace RenUI_Launcher
         private string r2ProfileDir = @"C:\Users\Family\AppData\Roaming\r2modmanPlus-local\Mimesis\profiles\Default";
         private string r2CacheDir181 = @"C:\Users\Family\AppData\Roaming\r2modmanPlus-local\Mimesis\cache\Pattern-RenUI\1.8.1";
         private string r2CacheDir180 = @"C:\Users\Family\AppData\Roaming\r2modmanPlus-local\Mimesis\cache\Pattern-RenUI\1.8.0";
-        private string sourceDllPath = @"C:\My_Games\Mimesis\InfiniteStamina\bin\Release\netstandard2.1\InfiniteStamina.dll";
+        private string sourceDllPath = @"C:\My_Games\Mimesis\InfiniteStamina\bin\Release\netstandard2.1\RenUI.dll";
 
         private float itemColorR = 1.0f;
         private float itemColorG = 0.85f;
@@ -74,7 +74,12 @@ namespace RenUI_Launcher
             bool melonFound = File.Exists(melonDll) || Directory.Exists(System.IO.Path.Combine(steamMimesisDir, "MelonLoader"));
             TxtMelonStatus.Text = melonFound ? "v0.7.3 Активен ✓" : "Не установлен ✗";
 
-            string modDll = System.IO.Path.Combine(steamMimesisDir, "Mods", "InfiniteStamina.dll");
+            string modDll = System.IO.Path.Combine(steamMimesisDir, "Mods", "RenUI.dll");
+            if (!File.Exists(modDll))
+            {
+                string legacyDll = System.IO.Path.Combine(steamMimesisDir, "Mods", "InfiniteStamina.dll");
+                if (File.Exists(legacyDll)) modDll = legacyDll;
+            }
             bool modFound = File.Exists(modDll) || File.Exists(sourceDllPath);
             TxtModStatus.Text = modFound ? $"v{CurrentVersion} Установлен ✓" : "Не найден ✗";
 
@@ -154,7 +159,8 @@ namespace RenUI_Launcher
                                         foreach (var asset in assetsElem.EnumerateArray())
                                         {
                                             if (asset.TryGetProperty("name", out var n) &&
-                                                (n.GetString().Equals("InfiniteStamina.dll", StringComparison.OrdinalIgnoreCase) ||
+                                                (n.GetString().Equals("RenUI.dll", StringComparison.OrdinalIgnoreCase) ||
+                                                 n.GetString().Equals("InfiniteStamina.dll", StringComparison.OrdinalIgnoreCase) ||
                                                  n.GetString().EndsWith(".dll", StringComparison.OrdinalIgnoreCase)))
                                             {
                                                 downloadDllUrl = asset.GetProperty("browser_download_url").GetString();
@@ -190,14 +196,18 @@ namespace RenUI_Launcher
                                 string steamMods = System.IO.Path.Combine(steamMimesisDir, "Mods");
                                 if (Directory.Exists(steamMods))
                                 {
-                                    File.WriteAllBytes(System.IO.Path.Combine(steamMods, "InfiniteStamina.dll"), dllBytes);
+                                    string oldLegacy = System.IO.Path.Combine(steamMods, "InfiniteStamina.dll");
+                                    if (File.Exists(oldLegacy)) { try { File.Delete(oldLegacy); } catch { } }
+                                    File.WriteAllBytes(System.IO.Path.Combine(steamMods, "RenUI.dll"), dllBytes);
                                 }
 
                                 // Deploy to r2modman
                                 string r2ModDir = System.IO.Path.Combine(r2ProfileDir, "Mods", "Pattern-RenUI");
                                 if (Directory.Exists(r2ModDir))
                                 {
-                                    File.WriteAllBytes(System.IO.Path.Combine(r2ModDir, "InfiniteStamina.dll"), dllBytes);
+                                    string oldLegacy = System.IO.Path.Combine(r2ModDir, "InfiniteStamina.dll");
+                                    if (File.Exists(oldLegacy)) { try { File.Delete(oldLegacy); } catch { } }
+                                    File.WriteAllBytes(System.IO.Path.Combine(r2ModDir, "RenUI.dll"), dllBytes);
                                 }
 
                                 // Deploy to local source
@@ -515,24 +525,32 @@ namespace RenUI_Launcher
                     string steamMods = System.IO.Path.Combine(steamMimesisDir, "Mods");
                     if (Directory.Exists(steamMods))
                     {
-                        File.Copy(sourceDllPath, System.IO.Path.Combine(steamMods, "InfiniteStamina.dll"), true);
+                        string oldLegacy = System.IO.Path.Combine(steamMods, "InfiniteStamina.dll");
+                        if (File.Exists(oldLegacy)) { try { File.Delete(oldLegacy); } catch { } }
+                        File.Copy(sourceDllPath, System.IO.Path.Combine(steamMods, "RenUI.dll"), true);
                     }
 
                     // 2. r2modman Profile
                     string r2ModDir = System.IO.Path.Combine(r2ProfileDir, "Mods", "Pattern-RenUI");
                     if (Directory.Exists(r2ModDir))
                     {
-                        File.Copy(sourceDllPath, System.IO.Path.Combine(r2ModDir, "InfiniteStamina.dll"), true);
+                        string oldLegacy = System.IO.Path.Combine(r2ModDir, "InfiniteStamina.dll");
+                        if (File.Exists(oldLegacy)) { try { File.Delete(oldLegacy); } catch { } }
+                        File.Copy(sourceDllPath, System.IO.Path.Combine(r2ModDir, "RenUI.dll"), true);
                     }
 
                     // 3. r2modman Cache
                     if (Directory.Exists(r2CacheDir181))
                     {
-                        File.Copy(sourceDllPath, System.IO.Path.Combine(r2CacheDir181, "InfiniteStamina.dll"), true);
+                        string oldLegacy = System.IO.Path.Combine(r2CacheDir181, "InfiniteStamina.dll");
+                        if (File.Exists(oldLegacy)) { try { File.Delete(oldLegacy); } catch { } }
+                        File.Copy(sourceDllPath, System.IO.Path.Combine(r2CacheDir181, "RenUI.dll"), true);
                     }
                     if (Directory.Exists(r2CacheDir180))
                     {
-                        File.Copy(sourceDllPath, System.IO.Path.Combine(r2CacheDir180, "InfiniteStamina.dll"), true);
+                        string oldLegacy = System.IO.Path.Combine(r2CacheDir180, "InfiniteStamina.dll");
+                        if (File.Exists(oldLegacy)) { try { File.Delete(oldLegacy); } catch { } }
+                        File.Copy(sourceDllPath, System.IO.Path.Combine(r2CacheDir180, "RenUI.dll"), true);
                     }
 
                     TxtStatusMsg.Text = "✓ RenUI v1.8.1 успешно синхронизирован со Steam и r2modman!";
