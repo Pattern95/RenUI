@@ -1,0 +1,18 @@
+<Application x:Class="RenUI_Launcher.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <!-- Modern Cyber Dark Styles -->
+        <Color x:Key="BgDark">#0B0F19</Color>
+        <Color x:Key="BgCard">#111827</Color>
+        <Color x:Key="BgCardHover">#1A2234</Color>
+        <Color x:Key="AccentEmerald">#00E676</Color>
+        <Color x:Key="AccentViolet">#C77DFF</Color>
+        <Color x:Key="AccentCyan">#00F5D4</Color>
+        <Color x:Key="TextWhite">#F8FAFC</Color>
+        <Color x:Key="TextMuted">#94A3B8</Color>
+        <Color x:Key="BorderDark">#1F2937</Color>
+        <Color x:Key="BorderActive">#00E676</Color>
+    </Application.Resources>
+</Application>

@@ -1,0 +1,471 @@
+<Window x:Class="RenUI_Launcher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="RenUI Launcher &amp; Manager v1.8.1 by Pattern"
+        Height="720" Width="890"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Icon="icon.ico">
+
+    <Window.Resources>
+        <!-- Modern Cyber Dark Styles -->
+        <Style x:Key="ModernTabItem" TargetType="TabItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="TabBorder" Background="#111827" BorderBrush="#1F2937" BorderThickness="1,1,1,0" CornerRadius="8,8,0,0" Margin="0,0,6,0" Padding="16,10">
+                            <ContentPresenter ContentSource="Header" TextElement.FontWeight="SemiBold" TextElement.FontSize="13" TextElement.Foreground="#94A3B8"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="TabBorder" Property="Background" Value="#1A2234"/>
+                                <Setter TargetName="TabBorder" Property="BorderBrush" Value="#C77DFF"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="TabBorder" Property="Background" Value="#162032"/>
+                                <Setter TargetName="TabBorder" Property="BorderBrush" Value="#00E676"/>
+                                <Setter TargetName="TabBorder" Property="BorderThickness" Value="1,2,1,0"/>
+                                <Setter Property="Foreground" Value="#00E676"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Cyber Toggle Checkbox Style -->
+        <Style x:Key="CyberToggle" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#F8FAFC"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Border x:Name="CardBorder" Background="#111827" BorderBrush="#1F2937" BorderThickness="1" CornerRadius="8" Padding="14,12" Margin="0,0,0,8">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <ContentPresenter Content="{TemplateBinding Content}" TextElement.FontSize="13" TextElement.FontWeight="Bold" TextElement.Foreground="#F8FAFC"/>
+                                    <TextBlock x:Name="DescText" Text="{TemplateBinding Tag}" FontSize="11" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+
+                                <!-- Toggle switch visual -->
+                                <Border x:Name="SwitchBg" Grid.Column="1" Width="52" Height="26" CornerRadius="13" Background="#1E293B" BorderBrush="#334155" BorderThickness="1" VerticalAlignment="Center">
+                                    <Canvas>
+                                        <Ellipse x:Name="SwitchThumb" Width="20" Height="20" Fill="#64748B" Canvas.Left="3" Canvas.Top="2"/>
+                                    </Canvas>
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="CardBorder" Property="BorderBrush" Value="#334155"/>
+                                <Setter TargetName="CardBorder" Property="Background" Value="#151D2C"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="CardBorder" Property="BorderBrush" Value="#0D5C32"/>
+                                <Setter TargetName="CardBorder" Property="Background" Value="#0D1F17"/>
+                                <Setter TargetName="SwitchBg" Property="Background" Value="#059669"/>
+                                <Setter TargetName="SwitchBg" Property="BorderBrush" Value="#10B981"/>
+                                <Setter TargetName="SwitchThumb" Property="Fill" Value="#FFFFFF"/>
+                                <Setter TargetName="SwitchThumb" Property="Canvas.Left" Value="27"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Slider Style -->
+        <Style TargetType="Slider">
+            <Setter Property="Margin" Value="0,4,0,4"/>
+            <Setter Property="Foreground" Value="#00E676"/>
+        </Style>
+    </Window.Resources>
+
+    <!-- Outer Glow & Border Container -->
+    <Border CornerRadius="14" Background="#0B0F19" BorderBrush="#242E42" BorderThickness="1.5">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="30" Color="#000000" Opacity="0.85" ShadowDepth="8"/>
+        </Border.Effect>
+
+        <Grid Margin="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/> <!-- Title Bar -->
+                <RowDefinition Height="Auto"/> <!-- Status & Main Actions -->
+                <RowDefinition Height="*"/>    <!-- Tabs Content -->
+                <RowDefinition Height="Auto"/> <!-- Footer / Save Area -->
+            </Grid.RowDefinitions>
+
+            <!-- 1. Custom Title Bar -->
+            <Border Grid.Row="0" Background="#0F1422" CornerRadius="14,14,0,0" Padding="16,12" MouseLeftButtonDown="Header_MouseDown" BorderBrush="#1A2234" BorderThickness="0,0,0,1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Dragon Icon & Title -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Border Width="42" Height="42" CornerRadius="10" Background="#161224" BorderBrush="#C77DFF" BorderThickness="1.5" Margin="0,0,12,0">
+                            <Image Source="icon.png" Width="38" Height="38" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="REN" FontSize="19" FontWeight="Black" Foreground="#C77DFF"/>
+                                <TextBlock Text="UI" FontSize="19" FontWeight="Black" Foreground="#00E676" Margin="2,0,0,0"/>
+                                <Border Background="#1C2638" CornerRadius="4" Padding="6,2" Margin="10,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Text="v1.8.1" FontSize="11" FontWeight="Bold" Foreground="#38BDF8"/>
+                                </Border>
+                            </StackPanel>
+                            <TextBlock Text="MIMESIS STANDALONE LAUNCHER &amp; MANAGER • BY PATTERN" FontSize="10" FontWeight="SemiBold" Foreground="#64748B" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Window Control Buttons -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button x:Name="BtnMinimize" Click="BtnMinimize_Click" Width="32" Height="28" Background="#1A2234" Foreground="#94A3B8" BorderThickness="0" Margin="0,0,6,0" Cursor="Hand" Content="—" FontWeight="Bold" FontSize="12">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="6"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                        <Button x:Name="BtnClose" Click="BtnClose_Click" Width="32" Height="28" Background="#261A22" Foreground="#EF4444" BorderThickness="0" Cursor="Hand" Content="✕" FontWeight="Bold" FontSize="12">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="6"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- 2. System Status & Action Hero Bar -->
+            <Border Grid.Row="1" Background="#0D121F" Padding="18,14" BorderBrush="#1A2234" BorderThickness="0,0,0,1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Status Chips -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
+                        <!-- Steam Status -->
+                        <Border Background="#101826" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="6" Padding="10,5" Margin="0,0,10,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse Width="7" Height="7" Fill="#10B981" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="MIMESIS Steam: " FontSize="11" Foreground="#64748B"/>
+                                <TextBlock x:Name="TxtSteamStatus" Text="Найден ✓" FontSize="11" FontWeight="Bold" Foreground="#10B981"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- MelonLoader Status -->
+                        <Border Background="#101826" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="6" Padding="10,5" Margin="0,0,10,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse Width="7" Height="7" Fill="#10B981" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="MelonLoader: " FontSize="11" Foreground="#64748B"/>
+                                <TextBlock x:Name="TxtMelonStatus" Text="v0.7.3 Активен ✓" FontSize="11" FontWeight="Bold" Foreground="#10B981"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- RenUI Status -->
+                        <Border Background="#101826" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="6" Padding="10,5" Margin="0,0,10,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse Width="7" Height="7" Fill="#C77DFF" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="RenUI DLL: " FontSize="11" Foreground="#64748B"/>
+                                <TextBlock x:Name="TxtModStatus" Text="v1.8.1 Установлен ✓" FontSize="11" FontWeight="Bold" Foreground="#C77DFF"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- GitHub Updates Chip -->
+                        <Border Background="#101826" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="6" Padding="10,5">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse x:Name="DotUpdate" Width="7" Height="7" Fill="#38BDF8" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="GitHub: " FontSize="11" Foreground="#64748B"/>
+                                <TextBlock x:Name="TxtUpdateStatus" Text="Проверка обновлений..." FontSize="11" FontWeight="Bold" Foreground="#38BDF8"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Hero Action Buttons -->
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Launch Game Button -->
+                        <Button x:Name="BtnLaunchGame" Grid.Column="0" Click="BtnLaunchGame_Click" Height="48" Margin="0,0,10,0" Cursor="Hand" BorderThickness="0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="BtnBorder" CornerRadius="10" Background="#059669" BorderBrush="#10B981" BorderThickness="1.5">
+                                        <Border.Effect>
+                                            <DropShadowEffect BlurRadius="18" Color="#059669" Opacity="0.45" ShadowDepth="2"/>
+                                        </Border.Effect>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <TextBlock Text="▶" FontSize="18" FontWeight="Black" Foreground="#FFFFFF" Margin="0,0,10,0"/>
+                                            <TextBlock Text="ЗАПУСТИТЬ MIMESIS С RENUI" FontSize="15" FontWeight="Black" Foreground="#FFFFFF"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="BtnBorder" Property="Background" Value="#10B981"/>
+                                            <Setter TargetName="BtnBorder" Property="BorderBrush" Value="#34D399"/>
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter TargetName="BtnBorder" Property="Background" Value="#047857"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+
+                        <!-- Check GitHub Updates Button -->
+                        <Button x:Name="BtnCheckUpdates" Grid.Column="1" Click="BtnCheckUpdates_Click" Height="48" Width="185" Margin="0,0,10,0" Cursor="Hand" BorderThickness="0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="UpdBorder" CornerRadius="10" Background="#16182B" BorderBrush="#352458" BorderThickness="1.5">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <TextBlock Text="⚡" FontSize="15" Foreground="#C77DFF" Margin="0,0,8,0"/>
+                                            <TextBlock Text="Обновления GitHub" FontSize="13" FontWeight="Bold" Foreground="#C77DFF"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="UpdBorder" Property="Background" Value="#241B3B"/>
+                                            <Setter TargetName="UpdBorder" Property="BorderBrush" Value="#C77DFF"/>
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter TargetName="UpdBorder" Property="Background" Value="#181128"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+
+                        <!-- Sync Mod Files Button -->
+                        <Button x:Name="BtnSyncMod" Grid.Column="2" Click="BtnSyncMod_Click" Height="48" Width="140" Margin="0,0,10,0" Cursor="Hand" BorderThickness="0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="SyncBorder" CornerRadius="10" Background="#161F2E" BorderBrush="#253347" BorderThickness="1">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <TextBlock Text="🔄" FontSize="14" Margin="0,0,6,0"/>
+                                            <TextBlock Text="Синхр." FontSize="13" FontWeight="Bold" Foreground="#94A3B8"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="SyncBorder" Property="Background" Value="#1F293D"/>
+                                            <Setter TargetName="SyncBorder" Property="BorderBrush" Value="#38BDF8"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+
+                        <!-- Open Folder Button -->
+                        <Button x:Name="BtnOpenFolder" Grid.Column="3" Click="BtnOpenFolder_Click" Height="48" Width="50" Cursor="Hand" BorderThickness="0" ToolTip="Открыть папку игры">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="FolderBorder" CornerRadius="10" Background="#161F2E" BorderBrush="#253347" BorderThickness="1">
+                                        <TextBlock Text="📁" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="FolderBorder" Property="Background" Value="#1F293D"/>
+                                            <Setter TargetName="FolderBorder" Property="BorderBrush" Value="#C77DFF"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- 3. Tabs Navigation & Settings Content -->
+            <TabControl Grid.Row="2" Background="Transparent" BorderThickness="0" Margin="18,14,18,10">
+                <!-- TAB 1: Cheats & Gameplay -->
+                <TabItem Header="🎮 Читы и Геймплей" Style="{StaticResource ModernTabItem}">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,12,0,0">
+                        <StackPanel Margin="0,0,8,0">
+                            <CheckBox x:Name="ChkGodMode" Content="🛡 GodMode (Полное бессмертие)" Tag="Блокирует любой урон, смерть от монстров, падения и сетевые сигналы гибели в мультиплеере." Style="{StaticResource CyberToggle}"/>
+                            <CheckBox x:Name="ChkInfiniteStamina" Content="⚡ Бесконечная выносливость (Infinite Stamina)" Tag="Бег никогда не прерывается и не тратит шкалу выносливости." Style="{StaticResource CyberToggle}"/>
+                            <CheckBox x:Name="ChkNoWeight" Content="🏃 Без замедления от веса (No Weight Slowdown)" Tag="Перегруз инвентаря не снижает скорость ходьбы и бега." Style="{StaticResource CyberToggle}"/>
+                            <CheckBox x:Name="ChkSilentSteps" Content="👣 Бесшумные шаги (Silent Steps)" Tag="Монстры не реагируют на звук ваших шагов и бега." Style="{StaticResource CyberToggle}"/>
+                            <CheckBox x:Name="ChkInfiniteBattery" Content="🔋 Бесконечный заряд и прочность (Battery &amp; Durability)" Tag="Фонари, рации, сканеры и оружие не разряжаются и не ломаются." Style="{StaticResource CyberToggle}"/>
+                            <CheckBox x:Name="ChkAntiConta" Content="☣ Защита от радиации и заражения (Anti-Conta)" Tag="Накопление заражения принудительно обнуляется, персонаж не мутирует." Style="{StaticResource CyberToggle}"/>
+                            <CheckBox x:Name="ChkTeamStatus" Content="👥 HUD статуса команды (Team Status)" Tag="Отображает плашку с никами, здоровьем и статусом (Жив/Мертв) прямо в игре." Style="{StaticResource CyberToggle}"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- TAB 2: ESP & Visuals -->
+                <TabItem Header="👁 ESP &amp; Подсветка" Style="{StaticResource ModernTabItem}">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,12,0,0">
+                        <StackPanel Margin="0,0,8,0">
+                            <!-- FullBright Card -->
+                            <Border Background="#111827" BorderBrush="#1F2937" BorderThickness="1" CornerRadius="8" Padding="14,12" Margin="0,0,0,10">
+                                <StackPanel>
+                                    <CheckBox x:Name="ChkFullBright" Content="☀️ FullBright (Ночное видение)" Tag="Удаляет темноту, подсвечивая всё окружение без фонарика." Style="{StaticResource CyberToggle}" Margin="0,0,0,8"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,4,0,2">
+                                        <TextBlock Text="Яркость освещения:" FontSize="12" Foreground="#94A3B8"/>
+                                        <TextBlock x:Name="TxtFullBrightVal" Text="1.2x" FontSize="12" FontWeight="Bold" Foreground="#00E676" Margin="6,0,0,0"/>
+                                    </StackPanel>
+                                    <Slider x:Name="SldFullBright" Minimum="0.5" Maximum="3.0" Value="1.2" ValueChanged="SldFullBright_ValueChanged" TickFrequency="0.1" IsSnapToTickEnabled="True"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Item ESP Card -->
+                            <Border Background="#111827" BorderBrush="#1F2937" BorderThickness="1" CornerRadius="8" Padding="14,12" Margin="0,0,0,10">
+                                <StackPanel>
+                                    <CheckBox x:Name="ChkItemEsp" Content="📦 ESP предметов через стены (Item ESP)" Tag="Отображает название предмета, цену и точное расстояние через стены." Style="{StaticResource CyberToggle}" Margin="0,0,0,8"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,4,0,2">
+                                        <TextBlock Text="Дальность поиска предметов:" FontSize="12" Foreground="#94A3B8"/>
+                                        <TextBlock x:Name="TxtItemDistVal" Text="100 м" FontSize="12" FontWeight="Bold" Foreground="#38BDF8" Margin="6,0,0,0"/>
+                                    </StackPanel>
+                                    <Slider x:Name="SldItemDist" Minimum="10" Maximum="200" Value="100" ValueChanged="SldItemDist_ValueChanged" TickFrequency="5" IsSnapToTickEnabled="True"/>
+
+                                    <TextBlock Text="Цвет подсветки предметов:" FontSize="12" Foreground="#94A3B8" Margin="0,8,0,6"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button x:Name="BtnColorGold" Click="BtnColor_Click" Tag="1.0;0.85;0.20" Background="#F59E0B" Width="70" Height="26" Margin="0,0,8,0" Content="Золотой" FontSize="11" FontWeight="Bold" Foreground="#000000" Cursor="Hand"/>
+                                        <Button x:Name="BtnColorGreen" Click="BtnColor_Click" Tag="0.0;0.90;0.45" Background="#10B981" Width="70" Height="26" Margin="0,0,8,0" Content="Зелёный" FontSize="11" FontWeight="Bold" Foreground="#000000" Cursor="Hand"/>
+                                        <Button x:Name="BtnColorCyan" Click="BtnColor_Click" Tag="0.0;0.85;1.0" Background="#06B6D4" Width="70" Height="26" Margin="0,0,8,0" Content="Циан" FontSize="11" FontWeight="Bold" Foreground="#000000" Cursor="Hand"/>
+                                        <Button x:Name="BtnColorPurple" Click="BtnColor_Click" Tag="0.78;0.45;1.0" Background="#A855F7" Width="70" Height="26" Content="Фиолетовый" FontSize="11" FontWeight="Bold" Foreground="#FFFFFF" Cursor="Hand"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Actor ESP Card -->
+                            <Border Background="#111827" BorderBrush="#1F2937" BorderThickness="1" CornerRadius="8" Padding="14,12">
+                                <StackPanel>
+                                    <CheckBox x:Name="ChkActorEsp" Content="👥 ESP игроков и врагов (Player &amp; Monster ESP)" Tag="Подсвечивает живых союзников зелёным, а врагов и монстров красным." Style="{StaticResource CyberToggle}" Margin="0,0,0,8"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,4,0,2">
+                                        <TextBlock Text="Дальность сканирования актеров:" FontSize="12" Foreground="#94A3B8"/>
+                                        <TextBlock x:Name="TxtActorDistVal" Text="200 м" FontSize="12" FontWeight="Bold" Foreground="#C77DFF" Margin="6,0,0,0"/>
+                                    </StackPanel>
+                                    <Slider x:Name="SldActorDist" Minimum="20" Maximum="300" Value="200" ValueChanged="SldActorDist_ValueChanged" TickFrequency="10" IsSnapToTickEnabled="True"/>
+
+                                    <TextBlock Text="Что отображать в ESP:" FontSize="12" Foreground="#94A3B8" Margin="0,8,0,6"/>
+                                    <WrapPanel>
+                                        <CheckBox x:Name="ChkEspAllies" Content="Союзники" IsChecked="True" Foreground="#10B981" FontWeight="Bold" Margin="0,0,16,6"/>
+                                        <CheckBox x:Name="ChkEspEnemies" Content="Враги" IsChecked="True" Foreground="#EF4444" FontWeight="Bold" Margin="0,0,16,6"/>
+                                        <CheckBox x:Name="ChkEspName" Content="Ник / Имя" IsChecked="True" Foreground="#F8FAFC" Margin="0,0,16,6"/>
+                                        <CheckBox x:Name="ChkEspDist" Content="Дистанция" IsChecked="True" Foreground="#F8FAFC" Margin="0,0,16,6"/>
+                                        <CheckBox x:Name="ChkEspHp" Content="Здоровье (HP)" IsChecked="True" Foreground="#F8FAFC" Margin="0,0,16,6"/>
+                                    </WrapPanel>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- TAB 3: Keybinds -->
+                <TabItem Header="⌨ Бинды и Управление" Style="{StaticResource ModernTabItem}">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,12,0,0">
+                        <StackPanel Margin="0,0,8,0">
+                            <Border Background="#111827" BorderBrush="#1F2937" BorderThickness="1" CornerRadius="8" Padding="14,14" Margin="0,0,0,10">
+                                <StackPanel>
+                                    <TextBlock Text="⚡ Клавиша открытия меню в игре" FontSize="14" FontWeight="Bold" Foreground="#00E676"/>
+                                    <TextBlock Text="Нажмите [F7] в любой момент в игре, чтобы открыть или свернуть встроенный интерфейс RenUI со спавнером предметов и читами." FontSize="12" Foreground="#94A3B8" Margin="0,4,0,10" TextWrapping="Wrap"/>
+                                    <Border Background="#0B0F19" BorderBrush="#00E676" BorderThickness="1" CornerRadius="6" Padding="12,8" HorizontalAlignment="Left">
+                                        <TextBlock Text="Главная клавиша меню: F7" FontWeight="Black" FontSize="13" Foreground="#FFFFFF"/>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Background="#111827" BorderBrush="#1F2937" BorderThickness="1" CornerRadius="8" Padding="14,14">
+                                <StackPanel>
+                                    <TextBlock Text="🎯 Быстрые бинды и Спавнер предметов" FontSize="14" FontWeight="Bold" Foreground="#C77DFF"/>
+                                    <TextBlock Text="Вы можете назначить любую клавишу прямо в меню F7 на спавн нужных предметов (в руки или на землю) или переключение функций." FontSize="12" Foreground="#94A3B8" Margin="0,4,0,8" TextWrapping="Wrap"/>
+                                    <TextBlock Text="✓ Поддержка нескольких биндов одновременно&#x0a;✓ Спавн работает везде: в лобби, хабе, меню подготовки и в матче&#x0a;✓ Авто-сохранение всех назначенных кнопок при перезапуске" FontSize="12" Foreground="#64748B" LineHeight="20"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- TAB 4: About & Paths -->
+                <TabItem Header="ℹ О программе &amp; GitHub" Style="{StaticResource ModernTabItem}">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,12,0,0">
+                        <StackPanel Margin="0,0,8,0">
+                            <Border Background="#111827" BorderBrush="#1F2937" BorderThickness="1" CornerRadius="8" Padding="16,14" Margin="0,0,0,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Width="64" Height="64" CornerRadius="12" Background="#161224" BorderBrush="#C77DFF" BorderThickness="1.5" Margin="0,0,16,0" VerticalAlignment="Top">
+                                        <Image Source="icon.png" Width="60" Height="60" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    </Border>
+
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="RenUI v1.8.1 by Pattern" FontSize="16" FontWeight="Black" Foreground="#C77DFF"/>
+                                        <TextBlock Text="Автономный кибер-мод и лаунчер для игры MIMESIS (версия 0.4.2+)." FontSize="12" Foreground="#94A3B8" Margin="0,4,0,6"/>
+                                        <TextBlock Text="Репозиторий: https://github.com/Pattern95/RenUI" FontSize="11" Foreground="#38BDF8" Margin="0,0,0,4"/>
+                                        <TextBlock Text="Разработчик: Pattern" FontSize="12" FontWeight="Bold" Foreground="#00E676"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <Border Background="#111827" BorderBrush="#1F2937" BorderThickness="1" CornerRadius="8" Padding="14,14">
+                                <StackPanel>
+                                    <TextBlock Text="📂 Системные пути" FontSize="13" FontWeight="Bold" Foreground="#F8FAFC" Margin="0,0,0,8"/>
+                                    <TextBlock x:Name="TxtPathsDisplay" FontSize="11" Foreground="#64748B" TextWrapping="Wrap" LineHeight="18"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+            </TabControl>
+
+            <!-- 4. Footer & Save Bar -->
+            <Border Grid.Row="3" Background="#0D121F" CornerRadius="0,0,14,14" Padding="18,12" BorderBrush="#1A2234" BorderThickness="0,1,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Status Notification Message -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock x:Name="TxtStatusMsg" Text="✓ Все системы готовы. Нажмите «Запустить MIMESIS», чтобы начать игру." FontSize="12" FontWeight="SemiBold" Foreground="#10B981"/>
+                    </StackPanel>
+
+                    <!-- Save Config Button -->
+                    <Button x:Name="BtnSaveConfig" Grid.Column="1" Click="BtnSaveConfig_Click" Height="36" Padding="18,0" Cursor="Hand" BorderThickness="0">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="SaveBorder" CornerRadius="8" Background="#1E293B" BorderBrush="#334155" BorderThickness="1">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock Text="💾" FontSize="12" Margin="0,0,6,0"/>
+                                        <TextBlock Text="Сохранить настройки" FontSize="12" FontWeight="Bold" Foreground="#F8FAFC"/>
+                                    </StackPanel>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="SaveBorder" Property="Background" Value="#2A384F"/>
+                                        <Setter TargetName="SaveBorder" Property="BorderBrush" Value="#00E676"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

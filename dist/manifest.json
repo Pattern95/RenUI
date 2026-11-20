@@ -1,0 +1,9 @@
+{
+  "name": "RenUI",
+  "version_number": "1.8.1",
+  "website_url": "https://github.com",
+  "description": "RenUI by Pattern: Draggable Cyber-Modern menu with GodMode, Infinite Stamina, Battery, Anti-Conta, FullBright, Custom Allies & Enemies ESP, Item ESP, Item Spawner & Keybinds.",
+  "dependencies": [
+    "LavaGang-MelonLoader-0.7.3"
+  ]
+}

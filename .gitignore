@@ -1,0 +1,21 @@
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+Launcher_Dist/
+
+# Visual Studio / Rider files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Temporary and cache files
+*.tmp
+*.log
+*.bak
+*.old
